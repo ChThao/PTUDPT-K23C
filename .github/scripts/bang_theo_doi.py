@@ -71,6 +71,7 @@ def main():
     ap.add_argument("--han", help='hạn chót, vd "2026-11-05 23:59"')
     ap.add_argument("--url", default="https://github.com/PTUDPTK23/CNTTK23C")
     ap.add_argument("-o", "--out", default="TheoDoi.xlsx")
+    ap.add_argument("--diem-gv", help="file CSV điểm GV nhập tay (MSSV + các cột điểm); ô trống = dùng điểm máy gợi ý")
     ap.add_argument("--cong-khai", action="store_true", help="bản đăng lên repo công khai: bỏ các cột điểm")
     a = ap.parse_args()
     repo = Path(a.repo)
@@ -100,6 +101,13 @@ def main():
             if "/" in f:
                 d = f.split("/", 1)[0]
                 cho_gop[d] = (ref.rsplit("/", 1)[1], datetime.fromisoformat(ad).astimezone(VN).replace(tzinfo=None), an, ref)
+
+    COT_DIEM = ["Chay_duoc_4", "Kiem_thu_2", "Thi_nghiem_loi_2", "Mo_rong_1", "Git_nhat_ky_1"]
+    diem_gv = {}
+    if a.diem_gv and Path(a.diem_gv).exists():
+        import csv
+        for r in csv.DictReader(open(a.diem_gv, encoding="utf-8-sig")):
+            diem_gv[(r.get("MSSV") or "").strip().lower()] = r
 
     pat_bai = re.compile(rf"^(bai|baitap|bt|lab)[_-]?0?{a.bai}$", re.I)
     wb = Workbook(); ws = wb.active; ws.title = f"Bài {a.bai}"
@@ -137,15 +145,27 @@ def main():
                             [("Chạy", "chay"), ("Test", "test"), ("Lỗi", "loi"), ("MR", "mr"), ("Git", "git")]) if r else ""
         n = ws.max_row + 1
         diem = [r[k][0] for k in ("chay", "test", "loi", "mr", "git")] if r else [0, 0, 0, 0, 0]
+        gv = diem_gv.get(mssv.lower(), {})
+        for k, cot_gv in enumerate(COT_DIEM):
+            v = (gv.get(cot_gv) or "").strip().replace(",", ".")
+            if v:
+                try: diem[k] = float(v)
+                except ValueError: pass
+        ghi_gv = (gv.get("Ghi_chu") or "").strip()
         ws.append([i, mssv, ten, "Mở", tt, cuoi.strftime("%d/%m/%Y %H:%M") if cuoi else "", len(cm),
-                   *diem, f"=SUM(H{n}:L{n})", ghichu, "; ".join(canh), ""])
+                   *diem, f"=SUM(H{n}:L{n})", ghichu, "; ".join(canh), ghi_gv])
         ws.cell(n, 4).hyperlink = f"{a.url}/tree/main/{quote(d.name)}"
         ws.cell(n, 4).font = Font(color="0563C1", underline="single")
         ws.cell(n, 5).fill = fill({"Đúng hạn": XANH, "Muộn": VANG, "Quá hạn": DO, "Chưa nộp": XAM}[tt])
         for c in range(8, 13): ws.cell(n, c).fill = fill(NHAP)
-        if r and r["chay"][0] is None: ws.cell(n, 8).fill = fill(VANG)
+        if r and diem[0] is None: ws.cell(n, 8).fill = fill(VANG)
         if canh: ws.cell(n, 15).fill = fill(VANG)
     last = ws.max_row
+    if a.diem_gv and not Path(a.diem_gv).exists():
+        import csv
+        with open(a.diem_gv, "w", newline="", encoding="utf-8-sig") as f:
+            w = csv.writer(f); w.writerow(["MSSV", "Ho_ten", *COT_DIEM, "Ghi_chu"])
+            for _, ten, mssv, _d in sv: w.writerow([mssv, ten, "", "", "", "", "", ""])
     ws.auto_filter.ref = f"A1:P{last}"
     vien = Border(*(Side(style="thin", color="BFBFBF"),) * 4)
     for row in ws.iter_rows(min_row=1, max_row=last, max_col=16):

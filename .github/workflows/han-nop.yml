@@ -30,6 +30,7 @@ jobs:
             if (pr.head.repo && pr.head.repo.full_name === pr.base.repo.full_name) return;
             const m = pr.title.match(/b[aà]i\s*(?:t[aậ]p)?\s*0?(\d+)/i);
             if (!m || !han[m[1]]) {
+              if (context.payload.action === "synchronize") return;   // không nhắc lại mỗi lần đẩy thêm code
               await github.rest.issues.createComment({ ...context.repo, issue_number: pr.number,
                 body: "Tiêu đề PR cần theo mẫu `Bai1 - MSSV - Họ tên` để hệ thống tính hạn nộp." });
               return;

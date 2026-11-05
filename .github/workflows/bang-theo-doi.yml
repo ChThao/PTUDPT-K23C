@@ -1,14 +1,13 @@
-# Tự tạo lại bảng theo dõi + điểm, lưu ở nhánh "bang-theo-doi"
+# Tạo bảng theo dõi + điểm MỘT LẦN sau hạn chót, lưu ở nhánh "bang-theo-doi"
 # Xem/tải: https://github.com/PTUDPTK23/CNTTK23C/tree/bang-theo-doi
 # Điểm GV nhập tay: sửa file _BangTheoDoi/DiemGV_BaiN.csv (ô trống = dùng điểm máy gợi ý).
-# Chạy 30 phút một lần, mỗi khi có bài được gộp vào main, hoặc bấm tay ở tab Actions.
-# Đổi bài / hạn nộp: sửa khối env bên dưới (giờ Việt Nam).
+# Tự chạy lúc 00:05 ngày 06/11 (giờ VN) = 17:05 UTC ngày 05/11.
+# Muốn tạo lại bảng (sau khi merge thêm bài, nhập điểm...): tab Actions -> Run workflow.
+# Bài sau: sửa khối env + dòng cron cho khớp hạn chót mới (cron tính theo giờ UTC = giờ VN - 7).
 name: Bang theo doi nop bai
 on:
   schedule:
-    - cron: "*/30 * * * *"
-  push:
-    branches: [main]
+    - cron: "5 17 5 11 *"
   workflow_dispatch:
 permissions:
   contents: write

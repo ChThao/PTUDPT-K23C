@@ -1,11 +1,9 @@
 # Bảng theo dõi nộp bài
 
-- `TheoDoi_BaiN.xlsx`: tình trạng nộp (Đúng hạn / Muộn / Quá hạn / Chưa nộp) và điểm từng tiêu chí của mỗi sinh viên.
-  GitHub tự tạo lại file này 30 phút một lần và mỗi khi có thay đổi trên nhánh main (`.github/workflows/bang-theo-doi.yml`).
-  Bài đã gửi Pull Request nhưng chưa được gộp cũng được tính, có ghi chú "CHỜ CÔ GỘP".
-- `DiemGV_BaiN.csv`: **giảng viên nhập điểm tại đây** (bấm vào file → biểu tượng bút chì → sửa → Commit changes).
-  Ô để trống = dùng điểm máy gợi ý. Cột `Chay_duoc_4` máy không tự chấm được, giảng viên nhập sau khi chạy thử.
-  Bảng Excel sẽ tự cập nhật theo điểm đã nhập sau khoảng 1 phút.
-- `TheoDoi_BaiN.csv`: bản sao dạng chữ của bảng, chỉ dùng để so sánh thay đổi.
+- **Bảng Excel** (tình trạng nộp + điểm): ở nhánh `bang-theo-doi`
+  → https://github.com/PTUDPTK23/CNTTK23C/tree/bang-theo-doi (bấm vào file `TheoDoi_BaiN.xlsx` → nút tải xuống).
+  GitHub tự tạo lại 30 phút một lần và mỗi khi nhánh main thay đổi. Bài gửi Pull Request chưa gộp cũng được tính ("CHỜ CÔ GỘP").
+- **`DiemGV_BaiN.csv`** (thư mục này): giảng viên nhập điểm tại đây (bấm vào file → bút chì → sửa → Commit changes).
+  Ô trống = dùng điểm máy gợi ý. Cột `Chay_duoc_4` máy không chấm được, giảng viên nhập sau khi chạy thử.
 
 Điểm máy gợi ý chỉ là tham khảo; điểm chính thức là điểm giảng viên nhập.

@@ -1,0 +1,47 @@
+# Tự tạo lại bảng theo dõi nộp bài (Excel, KHÔNG có điểm) vào thư mục _BangTheoDoi/
+# Chạy 30 phút một lần, mỗi khi có bài được gộp vào main, hoặc bấm tay ở tab Actions.
+# Đổi bài / hạn nộp: sửa khối env bên dưới (giờ Việt Nam).
+name: Bang theo doi nop bai
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  push:
+    branches: [main]
+    paths-ignore: ["_BangTheoDoi/**"]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: bang-theo-doi
+  cancel-in-progress: false
+env:
+  BAI: "1"
+  DUNG_HAN: "2026-11-05 19:00"
+  HAN_CHOT: "2026-11-05 23:59"
+jobs:
+  cap-nhat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install openpyxl==3.1.5
+      - name: Tao bang
+        run: |
+          python .github/scripts/bang_theo_doi.py . --bai "$BAI" --dung-han "$DUNG_HAN" --han "$HAN_CHOT" \
+            --url "https://github.com/${{ github.repository }}" --cong-khai -o "_BangTheoDoi/TheoDoi_Bai${BAI}.xlsx"
+          # Bản CSV để so sánh: chỉ commit khi tình hình nộp bài thật sự thay đổi
+          python -c "import csv,openpyxl,sys; ws=openpyxl.load_workbook(sys.argv[1]).worksheets[0]; csv.writer(open(sys.argv[2],'w',newline='',encoding='utf-8-sig')).writerows(ws.iter_rows(values_only=True))" \
+            "_BangTheoDoi/TheoDoi_Bai${BAI}.xlsx" "_BangTheoDoi/TheoDoi_Bai${BAI}.csv"
+      - name: Luu len repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "_BangTheoDoi/TheoDoi_Bai${BAI}.csv"
+          if git diff --cached --quiet; then echo "Khong co thay doi"; exit 0; fi
+          git add "_BangTheoDoi/TheoDoi_Bai${BAI}.xlsx"
+          git commit -m "Cap nhat bang theo doi Bai ${BAI}"
+          git push

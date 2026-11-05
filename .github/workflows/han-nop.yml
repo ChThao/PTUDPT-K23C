@@ -26,6 +26,8 @@ jobs:
           script: |
             const han = JSON.parse(process.env.HAN);
             const pr = context.payload.pull_request;
+            // PR tạo từ chính repo lớp (của giảng viên) thì bỏ qua, chỉ kiểm tra bài nộp từ fork
+            if (pr.head.repo && pr.head.repo.full_name === pr.base.repo.full_name) return;
             const m = pr.title.match(/b[aà]i\s*(?:t[aậ]p)?\s*0?(\d+)/i);
             if (!m || !han[m[1]]) {
               await github.rest.issues.createComment({ ...context.repo, issue_number: pr.number,

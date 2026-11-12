@@ -127,3 +127,4 @@ Nếu làm trên web thì bấm **Sync fork → Update branch** ở trang fork.
 | 47 | `dtc245200587` | Ma Thị Thanh Tú | [Ma Thị Thanh Tú - dtc245200587](./Ma Thị Thanh Tú - dtc245200587) |
 | 48 | `dtc245200424` | Ma Thị Uyên | [Ma Thị Uyên - dtc245200424](./Ma Thị Uyên - dtc245200424) |
 | 49 | `dtc245200377` | Hoàng Đức Việt | [Hoàng Đức Việt - dtc245200377](./Hoàng Đức Việt - dtc245200377) |
+| 50 | `dtc245200602` | Nguyễn Viết Cường | [Nguyễn Viết Cường - dtc245200602](./Nguyễn Viết Cường - dtc245200602) |
